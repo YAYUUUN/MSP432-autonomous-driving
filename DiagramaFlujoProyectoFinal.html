@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrames de Flux - Robot Seguidor de Parets</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .flowchart-section {
+            margin-bottom: 50px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border-left: 5px solid #3498db;
+        }
+        
+        .flowchart-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+        
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+        }
+        
+        .step {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            text-align: center;
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(116, 185, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .step:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(116, 185, 255, 0.4);
+        }
+        
+        .decision {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+            clip-path: polygon(20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%, 0% 50%);
+            padding: 20px 40px;
+            color: white;
+            text-align: center;
+            min-width: 180px;
+            box-shadow: 0 5px 15px rgba(253, 121, 168, 0.3);
+        }
+        
+        .start-end {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            border-radius: 50px;
+            padding: 15px 30px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.3);
+        }
+        
+        .arrow {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 20px solid #6c5ce7;
+            margin: -5px 0;
+        }
+        
+        .branch {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin: 20px 0;
+            gap: 15px;
+        }
+        
+        .branch-path {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            margin: 0 20px;
+            gap: 15px;
+        }
+        
+        .condition-label {
+            background: #f39c12;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .code-snippet {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin-top: 15px;
+            overflow-x: auto;
+            border-left: 4px solid #4299e1;
+        }
+        
+        .nav-buttons {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .highlight {
+            background: linear-gradient(135deg, #ff7675, #d63031);
+        }
+        
+        .loop {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+        }
+        
+        .sensor {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Diagrames de Flux - Robot Seguidor de Parets MSP432</h1>
+        
+        <!-- 1. Inicialització del Main -->
+        <div class="flowchart-section">
+            <h2>1. Inicialització del Main (Complet, no detallem els mètodes perquè ja es va fer)</h2>
+            <div class="flowchart">
+                <div class="step start-end">INICI MAIN</div>
+                <div class="arrow"></div>
+                <div class="step">Desactivar Watchdog Timer</div>
+                <div class="arrow"></div>
+                <div class="step">init_ucs_24MHz()</div>
+                <div class="arrow"></div>
+                <div class="step">Init_UART()</div>
+                <div class="arrow"></div>
+                <div class="step">Init_LCD()</div>
+                <div class="arrow"></div>
+                <div class="step">init_boton()</div>
+                <div class="arrow"></div>
+                <div class="step">Configurar LED motors</div>
+                <div class="arrow"></div>
+                <div class="step">config_angle_limit() per ambdós motors</div>
+                <div class="arrow"></div>
+                <div class="step">noMoure() - Aturar motors</div>
+                <div class="arrow"></div>
+                <div class="step">initVariables()</div>
+                <div class="arrow"></div>
+                <div class="step">Mostrar pantalla amb noms</div>
+                <div class="arrow"></div>
+                <div class="step">Esperar 5 segons</div>
+                <div class="arrow"></div>
+                <div class="step">Netejar pantalla</div>
+                <div class="arrow"></div>
+                <div class="step">paretTrobada = 0</div>
+                <div class="arrow"></div>
+                <div class="step loop start-end">ENTRAR AL LOOP PRINCIPAL</div>
+            </div>
+            <div class="code-snippet">
+// Variables inicialitzades:
+programaInicio = 0;
+num_aplaudiments_anterior = 0;
+canviarSentit = false;
+gir180 = 1;
+            </div>
+        </div>
+
+        <!-- 2. Loop Principal -->
+        <div class="flowchart-section">
+            <h2>2. Loop Principal</h2>
+            <div class="flowchart">
+                <div class="step start-end loop">WHILE(1) - LOOP INFINIT</div>
+                <div class="arrow"></div>
+                <div class="decision">programaInicio == false?</div>
+                
+                <div class="branch">
+                    <div class="branch-path">
+                        <div class="condition-label">SÍ</div>
+                        <div class="step">comprovar_comencament()</div>
+                        <div class="arrow"></div>
+                        <div class="step">Llegir aplaudiments</div>
+                        <div class="arrow"></div>
+                        <div class="step">Esperar 2 aplaudiments per començar</div>
+                    </div>
+                    <div class="branch-path">
+                        <div class="condition-label">NO</div>
+                        <div class="decision">canviarSentit?</div>
+                        <div class="branch">
+                            <div class="branch-path">
+                                <div class="condition-label">NO (Esquerra)</div>
+                                <div class="decision">paretTrobada?</div>
+                                <div class="arrow"></div>
+                                <div class="step">SI: seguirParetEsquerra()</div>
+                                <div class="arrow"></div>
+                                <div class="step">NO: buscarParet()</div>
+                            </div>
+                            <div class="branch-path">
+                                <div class="condition-label">SÍ (Dreta)</div>
+                                <div class="step">Comprovar gir 180°</div>
+                                <div class="arrow"></div>
+                                <div class="step">seguirParetDreta()</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Quan està estancat -->
+        <div class="flowchart-section">
+            <h2>3. Quan està Estancat (encerrado)</h2>
+            <div class="flowchart">
+                <div class="step start-end">DETECTAR ESTANCAMENT</div>
+                <div class="arrow"></div>
+                <div class="step sensor">Llegir sensors: distEsq, distCent, distDre</div>
+                <div class="arrow"></div>
+                <div class="decision">Tots els sensors > 88cm?</div>
+                <div class="arrow"></div>
+                <div class="step highlight">SÍ: Robot estancat!</div>
+                <div class="arrow"></div>
+                <div class="step">pivotarSobreSiMateixDreta()a velocitat: 700</div>
+                <div class="arrow"></div>
+                <div class="step">Esperar 1200ms (per fer aprox 180º)</div>
+                <div class="arrow"></div>
+                <div class="step start-end">SORTIR DE LA FUNCIÓ</div>
+            </div>
+            <div class="code-snippet">
+// Condició d'estancament:
+if (distEsq > 88 && distCent > 88 && distDre > 88) {
+    encerrado(); // Girar per trobar sortida
+    return;
+}
+            </div>
+        </div>
+
+        <!-- 4. Seguir paret esquerra -->
+        <div class="flowchart-section">
+            <h2>4. Quan Segueix una Paret (Esquerra)</h2>
+            <div class="flowchart">
+                <div class="step start-end">SEGUIR PARET ESQUERRA</div>
+                <div class="arrow"></div>
+                <div class="step sensor">Llegir sensors de distància</div>
+                <div class="arrow"></div>
+                <div class="decision">Estancat?</div>
+                
+                <div class="branch">
+                    <div class="branch-path">
+                        <div class="condition-label">SÍ</div>
+                        <div class="step highlight">Executar encerrado()</div>
+                        <div class="arrow"></div>
+                        <div class="step">RETURN</div>
+                    </div>
+                    <div class="branch-path">
+                        <div class="condition-label">NO</div>
+                        <div class="decision">distCentre > DIST_SEGURETAT+7?</div>
+                        <div class="branch">
+                            <div class="branch-path">
+                                <div class="condition-label">SÍ</div>
+                                <div class="step">Girar dreta</div>
+                                <div class="arrow"></div>
+                                <div class="step">Esperar 600ms</div>
+                                <div class="arrow"></div>
+                                <div class="step">RETURN</div>
+                            </div>
+                            <div class="branch-path">
+                                <div class="condition-label">NO</div>
+                                <div class="step">Calcular error = distEsq - DIST_SEGURETAT</div>
+                                <div class="arrow"></div>
+                                <div class="decision">abs(error) > MARGEN_ERROR?</div>
+                                <div class="arrow"></div>
+                                <div class="step">Ajustar direcció segons error</div>
+                                <div class="arrow"></div>
+                                <div class="step">moureEndevant(velocitat: 500)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Detectar objecte davant -->
+        <div class="flowchart-section">
+            <h2>5. Quan Detecta un Objecte Davant</h2>
+            <div class="flowchart">
+                <div class="step start-end">OBJECTE DETECTAT DAVANT</div>
+                <div class="arrow"></div>
+                <div class="step sensor">distCentre = sensorCentre()</div>
+                <div class="arrow"></div>
+                <div class="decision">distCentre > DIST_SEGURETAT+7?</div>
+                
+                <div class="branch">
+                    <div class="branch-path">
+                        <div class="condition-label">SÍ - Espai lliure</div>
+                        <div class="step">Continuar endavant</div>
+                        <div class="arrow"></div>
+                        <div class="step">Mantenir seguiment de paret</div>
+                    </div>
+                    <div class="branch-path">
+                        <div class="condition-label">NO - Obstacle proper</div>
+                        <div class="step highlight">pivotarSobreSiMateixDreta()</div>
+                        <div class="arrow"></div>
+                        <div class="step">Velocitat: 700</div>
+                        <div class="arrow"></div>
+                        <div class="step">Esperar 600ms</div>
+                        <div class="arrow"></div>
+                        <div class="step">RETURN per reavaluació</div>
+                    </div>
+                </div>
+            </div>
+            <div class="code-snippet">
+// Lògica de detecció d'obstacle:
+if (distCent > (DIST_SEGURETAT+7)) {
+    pivotarSobreSiMateixDreta(ID_DRETA, ID_ESQUERRA, 700);
+    esperaTemps(600);
+    return;
+}
+            </div>
+        </div>
+
+        <!-- 6. Canviar sentit -->
+        <div class="flowchart-section">
+            <h2>6. Quan es Dona a Canviar Sentit</h2>
+            <div class="flowchart">
+                <div class="step start-end">CANVI DE SENTIT ACTIVAT</div>
+                <div class="arrow"></div>
+                <div class="step">Botó S2 premut (PORT3_IRQHandler)</div>
+                <div class="arrow"></div>
+                <div class="step">canviarSentit = !canviarSentit</div>
+                <div class="arrow"></div>
+                <div class="step">gir180 = 0 (Marcar gir pendent)</div>
+                <div class="arrow"></div>
+                <div class="decision">Dins del loop: canviarSentit?</div>
+                
+                <div class="branch">
+                    <div class="branch-path">
+                        <div class="condition-label">TRUE - Anar a la dreta</div>
+                        <div class="decision">gir180 == 0?</div>
+                        <div class="arrow"></div>
+                        <div class="step">SÍ: giraMitjaVolta()</div>
+                        <div class="arrow"></div>
+                        <div class="step">gir180 = 1</div>
+                        <div class="arrow"></div>
+                        <div class="step">seguirParetDreta()</div>
+                    </div>
+                    <div class="branch-path">
+                        <div class="condition-label">FALSE - Anar a l'esquerra</div>
+                        <div class="decision">gir180 == 0?</div>
+                        <div class="arrow"></div>
+                        <div class="step">SÍ: giraMitjaVolta()</div>
+                        <div class="arrow"></div>
+                        <div class="step">gir180 = 1</div>
+                        <div class="arrow"></div>
+                        <div class="step">seguirParetEsquerra()</div>
+                    </div>
+                </div>
+            </div>
+            <div class="code-snippet">
+// Gir de 180 graus:
+void giraMitjaVolta() {
+    pivotarSobreSiMateix(ID_DRETA, ID_ESQUERRA, 700);
+    esperaTemps(1260); // Temps calibrat per 180°
+}
+
+// Handler del botó:
+void PORT3_IRQHandler(void) {
+    canviarSentit = !canviarSentit;
+    gir180 = 0; // Marcar que cal fer gir
+}
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <button class="nav-btn" onclick="window.scrollTo(0,0)">⬆️ Inici</button>
+        <button class="nav-btn" onclick="window.print()">🖨️ Imprimir</button>
+    </div>
+
+    <script>
+        // Smooth scrolling and interactive elements
+        document.querySelectorAll('.step, .decision').forEach(element => {
+            element.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            
+            element.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+
+        // Add click functionality to steps for more details
+        document.querySelectorAll('.step').forEach(element => {
+            element.addEventListener('click', function() {
+                this.style.background = 'linear-gradient(135deg, #00b894, #00a085)';
+                setTimeout(() => {
+                    this.style.background = '';
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>
